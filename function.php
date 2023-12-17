@@ -18,27 +18,7 @@ function getTotalBarang()
 function getTotalBarangMasuk()
 {
     global $conn;
-    $query = "SELECT SUM(stock) AS total FROM stock";
-    $result = mysqli_query($conn, $query);
-    $data = mysqli_fetch_assoc($result);
-    return $data['total'];
-}
-
-//Fungsi untuk menghitung total peminjaman
-function getTotalPeminjaman()
-{
-    global $conn;
-    $query = "SELECT COUNT(*) AS total FROM peminjaman";
-    $result = mysqli_query($conn, $query);
-    $data = mysqli_fetch_assoc($result);
-    return $data['total'];
-}
-
-// Fungsi untuk menghitung total barang peminjaman
-function getTotalBarangPeminjaman()
-{
-    global $conn;
-    $query = "SELECT SUM(jumlah) AS total FROM peminjaman";
+    $query = "SELECT SUM(jumlah) AS total FROM masuk";
     $result = mysqli_query($conn, $query);
     $data = mysqli_fetch_assoc($result);
     return $data['total'];
@@ -48,7 +28,7 @@ function getTotalBarangPeminjaman()
 if(isset($_POST['addnewbarang'])){
     $namabarang = $_POST['namabarang'];
     $deskripsi = $_POST['deskripsi'];
-    $stock = $_POST['stock'];
+    $stock = $_POST[0];
 
     //bagian gambar
     $allowed_extension = array('png','jpg');
@@ -190,6 +170,7 @@ if(isset($_POST['hapusbarang'])){
     unlink($img);
 
     $hapus = mysqli_query($conn,"delete from stock where idbarang ='$idbrg'");
+    $hapusdata = mysqli_query($conn, "DELETE FROM masuk WHERE idbarang = '$idbrg'");
     if($delete){
         header('location:index.php');
     } else {
@@ -248,7 +229,7 @@ if (isset($_POST['hapusbarangmasuk'])) {
     $keterangan = $_POST['keterangan'];
 
     // Ambil data stok barang
-    $getdatastock = mysqli_query($conn, "SELECT * FROM stock WHERE idbarang='$idbrg'");
+    $getdatastock = mysqli_query($conn, "SELECT * FROM masuk WHERE idbarang='$idbrg'");
     $data = mysqli_fetch_array($getdatastock);
     $stok = $data['stock'];
 
@@ -267,104 +248,6 @@ if (isset($_POST['hapusbarangmasuk'])) {
         header('location: masuk.php');
     }
 }
-
-
-//Menambah Data Peminjaman
-if(isset($_POST['pinjam'])){
-    $idbarang = $_POST['barangnya'];
-    $idp = $_POST['idpeminjaman'];
-    $jumlah = $_POST['jumlah'];
-    $peminjam = $_POST['peminjam'];
-    $penanggung_jawab = $_POST['penanggung_jawab'];
-    $nohp = $_POST['no_telepon'];
-
-    //ambil stock sekarang
-    $stok_terkini = mysqli_query($conn,"select * from stock where idbarang='$idbarang'");
-    $stok_nya = mysqli_fetch_array($stok_terkini);
-    $stok = $stok_nya['stock'];
-
-    //mengurangi stock
-    $new_stock = $stok-$jumlah;
-
-    //mulai query database
-    $insertpinjam = mysqli_query($conn, "INSERT INTO peminjaman (idbarang,jumlah,peminjam,no_telepon,penanggung_jawab) 
-    values('$idbarang','$jumlah','$peminjam','$nohp','$penanggung_jawab')");
-
-    //mengurangi stock ditable dashboard
-    $kurangistock = mysqli_query($conn, "update stock set stock='$new_stock' where idbarang='$idbarang'");
-
-    if($insertpinjam&&$kurangistock){
-        //jika berhasil
-        echo '
-            <script>
-                alert("Berhasil");
-                window.locatio.href="peminjaman.php";
-            </script>
-            ';
-    } else {
-        //jika gagal
-        echo '
-            <script>
-                alert("Gagal");
-                window.locatio.href="peminjaman.php";
-            </script>
-            ';
-    }
-}
-
-// Menyelesaikan Peminjaman
-if(isset($_POST['barangkembali'])){
-    $idpeminjaman = $_POST['idpeminjaman'];
-    $idbarang = $_POST['idbarang'];
-
-    // Eksekusi
-    $update_status = mysqli_query($conn, "UPDATE peminjaman SET status='Kembali' WHERE idpeminjaman='$idpeminjaman'");
-
-    if($update_status){
-        // Ambil data jumlah dari id peminjaman
-        $stok_peminjaman = mysqli_query($conn, "SELECT * FROM peminjaman WHERE idpeminjaman='$idpeminjaman'");
-        $stok_peminjamannya = mysqli_fetch_array($stok_peminjaman);
-        $jumlah_peminjaman = $stok_peminjamannya['jumlah'];
-
-        // Ambil stock sekarang
-        $stok_saat_ini = mysqli_query($conn, "SELECT * FROM stock WHERE idbarang='$idbarang'");
-        $stok_nya = mysqli_fetch_array($stok_saat_ini);
-        $stok = $stok_nya['stock'];
-
-        // Mengembalikan stock
-        $new_stock = $stok + $jumlah_peminjaman;
-
-        // Update stock
-        $kembalikan_stock = mysqli_query($conn, "UPDATE stock SET stock='$new_stock' WHERE idbarang='$idbarang'");
-
-        if($kembalikan_stock){
-            // Jika berhasil
-            echo '
-                <script>
-                    alert("Berhasil");
-                    window.location.href="peminjaman.php";
-                </script>
-                ';
-        } else {
-            // Jika gagal mengembalikan stock
-            echo '
-                <script>
-                    alert("Gagal mengembalikan stock");
-                    window.location.href="peminjaman.php";
-                </script>
-                ';
-        }
-    } else {
-        // Jika gagal mengupdate status peminjaman
-        echo '
-            <script>
-                alert("Gagal mengupdate status peminjaman");
-                window.location.href="peminjaman.php";
-            </script>
-            ';
-    }
-}
-
 
 
 //Tambah Admin Baru
@@ -410,6 +293,4 @@ if(isset($_POST['hapusadmin'])){
         header('location:admin.php');
     }
 }
-
-//Meminjam Barang
 ?>

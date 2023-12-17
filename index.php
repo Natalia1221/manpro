@@ -33,21 +33,13 @@ require 'cek.php';
             <div style="display: flex; align-items: center;">
                 <img src="assets/img/Logo_SCR.png" alt="Logo" width="50" height="50">
                     <div style="margin-left: 10px; text-align: center;">
-                        <span style="font-size: 20px; display: block;">Inventaris</span>
-                        <span style="font-size: 12px; display: block;">Lab SCR</span>
+                        <span style="font-size: 20px; display: block;">INVENTARIS</span>
+                        <span style="font-size: 12px; display: block;">Laboratorium</span>
                     </div>
             </div>
         </a>
         <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
            
-            <ul class="navbar-nav ml-auto ml-md-0">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="userDropdlown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="logout.php">Logout</a>
-                    </div>
-                </li>
-            </ul>
         </nav>
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
@@ -61,10 +53,6 @@ require 'cek.php';
                         <a class="nav-link" href="masuk.php">
                             <div class="sb-nav-link-icon"><i class="fas fa-cube"></i></div>
                             Data Barang
-                        </a>
-                        <a class="nav-link" href="peminjaman.php">
-                            <div class="sb-nav-link-icon"><i class="fas fa-calendar-check"></i></div>
-                            Data Peminjaman
                         </a>
                         <a class="nav-link" href="admin.php">
                             <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
@@ -114,30 +102,6 @@ require 'cek.php';
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-success text-white mb-4">
-                                    <div class="card-body">
-                                        Total Peminjaman
-                                    </div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <div class="small text-white"><?= getTotalPeminjaman(); ?></div>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-info text-white mb-4">
-                                    <div class="card-body">
-                                        Total Barang Peminjaman
-                                    </div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <div class="small text-white"><?= getTotalBarangPeminjaman(); ?></div>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -151,24 +115,7 @@ require 'cek.php';
                                 <a href="export.php" class="btn btn-info">Export Data</a>
                             </div>
                             <div class="card-body">
-
-                            <?php 
-                            $ambildatastock = mysqli_query($conn,"select * from stock where stock < 1");
-
-                                while($fetch=mysqli_fetch_array($ambildatastock)){
-                                    $barang = $fetch['namabarang'];
-  
-                            ?>
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Mohon diperhatikan!</strong> Stock <?=$barang;?> sudah habis.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            </div>
-                            <?php 
-                                }
-                            ?>
-
+                            
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                         <thead>
@@ -188,8 +135,16 @@ require 'cek.php';
                                             while($data = mysqli_fetch_array($ambilsemuadatastock)){
                                                 $namabarang = $data['namabarang'];
                                                 $deskripsi = $data['deskripsi'];
-                                                $stock = $data['stock'];
                                                 $idbrg = $data['idbarang'];
+                                                $ambildatastock = mysqli_query($conn,"SELECT SUM(jumlah) AS total_jumlah FROM masuk WHERE idbarang = $idbrg;");
+                                                if ($ambildatastock->num_rows > 0) {
+                                                    // Ambil hasil query dan simpan ke dalam variabel $stock
+                                                    $row = $ambildatastock->fetch_assoc();
+                                                    $stock = $row["total_jumlah"];
+                                                } else {
+                                                    $stock = "0";
+                                                }
+
 
                                                 //cek apakah ada gambar
                                                 $gambar = $data['image']; //ambil gambar
@@ -210,45 +165,12 @@ require 'cek.php';
                                                 <td><?=$deskripsi;?></td>
                                                 <td><?=$stock;?></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-warning mr-2" data-toggle="modal" data-target="#perbarui<?=$idbrg;?>">
-                                                    Edit
-                                                    </button>
                                                     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#hapus<?=$idbrg;?>">
                                                     Hapus
                                                     </button>
 
                                                 </td>
                                             </tr>
-
-                                            <!-- Edit Modal -->
-                                            <div class="modal fade" id="perbarui<?=$idbrg;?>">
-                                                <div class="modal-dialog">
-                                                <div class="modal-content">
-
-                                                    <!-- Modal Header -->
-                                                    <div class="modal-header">
-                                                    <h4 class="modal-title">Update Barang</h4>
-                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                    </div>
-
-                                                    <!-- Modal body -->
-                                                    <form method="post" enctype="multipart/form-data">
-                                                    <div class="modal-body">
-                                                    <input type="text" name="namabarang" value="<?=$namabarang;?>" class="form-control" required>
-                                                    <br>
-                                                    <input type="text" name="deskripsi" value="<?=$deskripsi;?>" class="form-control" required>
-                                                    <br>
-                                                    <input type="file" name="file" class="form-control">
-                                                    <br>
-                                                    <input type="hidden" name="idbrg" value="<?=$idbrg;?>">
-                                                    <button type="submit" class="btn btn-primary" name="updatebarang">Submit</button>
-                                                    </div>
-                                                    </form>
-
-                                                </div>
-                                                </div>
-                                            </div>
-
                                             <!-- Delete Modal -->
                                             <div class="modal fade" id="hapus<?=$idbrg;?>">
                                                 <div class="modal-dialog">
@@ -345,8 +267,6 @@ require 'cek.php';
             <input type="text" name="namabarang" placeholder="Nama Barang" class="form-control" required>
             <br>
             <input type="text" name="deskripsi" placeholder="Deskripsi Barang" class="form-control" required>
-            <br>
-            <input type="number" name="stock" placeholder="Jumlah Barang" class="form-control" required>
             <br>
             <input type="file" name="file" class="form-control">
             <br>

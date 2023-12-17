@@ -33,21 +33,13 @@ require 'cek.php';
             <div style="display: flex; align-items: center;">
                 <img src="assets/img/Logo_SCR.png" alt="Logo" width="50" height="50">
                     <div style="margin-left: 10px; text-align: center;">
-                        <span style="font-size: 20px; display: block;">Inventaris</span>
-                        <span style="font-size: 12px; display: block;">Lab SCR</span>
+                        <span style="font-size: 20px; display: block;">INVENTARIS</span>
+                        <span style="font-size: 12px; display: block;">Laboratorium</span>
                     </div>
             </div>
         </a>
         <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
 
-        <ul class="navbar-nav ml-auto ml-md-0">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" href="logout.php">Logout</a>
-                </div>
-            </li>
-        </ul>
     </nav>
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
@@ -61,10 +53,6 @@ require 'cek.php';
                     <a class="nav-link" href="masuk.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-cube"></i></div>
                         Data Barang
-                    </a>
-                    <a class="nav-link" href="peminjaman.php">
-                        <div class="sb-nav-link-icon"><i class="fas fa-calendar-check"></i></div>
-                        Data Peminjaman
                     </a>
                     <a class="nav-link" href="admin.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
