@@ -67,7 +67,7 @@ if(isset($_POST['addnewbarang'])){
         //jika filenya tidak jpg/png
         echo '
             <script>
-                alert("File harus png/jpg");
+                alert("Masukkan gambar png/jpg");
                 window.locatio.href="index.php";
             </script>
             ';
